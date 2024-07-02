@@ -16,15 +16,16 @@ import java.util.stream.Collectors;
 public class PaymentService {
     public Payment prepare(Long orderId, String currency, BigDecimal foreignCurrencyAmount) throws IOException {
         // 환율 가져오기
-        // https://open.er-api.com/v6/latest/USD
         URL url = new URL("https://open.er-api.com/v6/latest/" + currency);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String response = in.lines().collect(Collectors.joining());
         in.close();
+
         ObjectMapper mapper = new ObjectMapper();
         ExRateData data = mapper.readValue(response, ExRateData.class);
         BigDecimal exRate = data.rates().get("KRW");
+
         // 금액계산
         BigDecimal convertedAmount = foreignCurrencyAmount.multiply(exRate);
 
