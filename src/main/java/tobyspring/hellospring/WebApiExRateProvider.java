@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.stream.Collectors;
 
-//@Component
+@Component
 public class WebApiExRateProvider implements ExRateProvider{
 
     @Override
@@ -24,6 +24,9 @@ public class WebApiExRateProvider implements ExRateProvider{
 
         ObjectMapper mapper = new ObjectMapper();
         ExRateData data = mapper.readValue(response, ExRateData.class);
+
+        System.out.println("API ExRate " + data.rates().get("KRW"));
+
         return data.rates().get("KRW");
     }
 }
