@@ -80,7 +80,7 @@ public class SimpleBufferedReader {
 - 기능의 뼈대(템플릿)와 실제 구현을 분리하는 패턴
 - 알고리즘의 특정 단계만 제어하고 싶을 때 사용
 
-!https://vos.line-scdn.net/landpress-content-v2_1761/1669353654260.png?updatedAt=1669353654000
+![](https://vos.line-scdn.net/landpress-content-v2_1761/1669353654260.png?updatedAt=1669353654000)
 
 - hook 메서드
     - 추상 클래스에서 선언하며, 기본적인 내용만 구현하거나 비워놓는 메서드
@@ -154,7 +154,7 @@ public class SimpleBufferedReader {
     - 팩토리 메소드 패턴을 이용하면 클래스의 인스턴스를 만드는 일을 서브클래스에게 맡기는 것
 - 제품이 추가 되었을 때, 제품 생성 로직이 한 곳에 모여 있어 추가 및 변경하기 쉬운 구조를 제공
 
-!https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/FactoryMethod.svg/1920px-FactoryMethod.svg.png
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/FactoryMethod.svg/1920px-FactoryMethod.svg.png)
 
 - 구조
     - **Creator (추상 팩토리 클래스)**: 팩토리 메서드를 선언하여 객체 생성의 인터페이스를 제공
@@ -238,7 +238,7 @@ public class SimpleBufferedReader {
 - 동일한 계열의 알고리즘군을 정의하고 각 알고리즘군을 캡슐화하여 클라이언트와 상관없이 독립적으로 알고리즘을 목적에 맞게 변경할 수 있게 하는 패턴.
 - 알고리즘이 독립적으로 변경 가능하도록 하며, 클라이언트에 영향을 주지 않고 다양한 알고리즘을 적용할 수 있게 해줌
 
-!https://velog.velcdn.com/images/hero6027/post/7f771761-b293-4467-a405-d5e689723a38/strategy.png
+![](https://velog.velcdn.com/images/hero6027/post/7f771761-b293-4467-a405-d5e689723a38/strategy.png)
 
 ### 클래스 정의
 
@@ -373,7 +373,7 @@ public class SimpleBufferedReader {
         - 기본 동작을 호출한 후 추가적인 동작을 수행
     - 구체 데코레이터(Concrete Decorators): 데코레이터의 서브클래스로, 추가적인 동작을 구현
 
-https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https://blog.kakaocdn.net/dn/exqO8t/btqAmt2l8MC/b6PrWbB5HTzMoFnflV6Vw1/img.png
+![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https://blog.kakaocdn.net/dn/exqO8t/btqAmt2l8MC/b6PrWbB5HTzMoFnflV6Vw1/img.png)
 
 - 예시 코드
     
@@ -431,7 +431,7 @@ https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https://blog.kakao
 
 - 대상 원본 객체를 대리하여 대신 처리하게 함으로써 로직의 흐름을 제어하는 행동 패턴
 
-!https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Proxy_pattern_diagram.svg/1200px-Proxy_pattern_diagram.svg.png
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Proxy_pattern_diagram.svg/1200px-Proxy_pattern_diagram.svg.png)
 
 - 구현방식
     - 구성 요소 인터페이스(Subject Interface): 실제 객체와 프록시 객체가 구현하는 공통 인터페이스
