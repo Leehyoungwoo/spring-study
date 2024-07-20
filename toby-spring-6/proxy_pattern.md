@@ -1,7 +1,7 @@
 ### **프록시 패턴 (Proxy Pattern)**
 
 - 대상 원본 객체를 대리하여 대신 처리하게 함으로써 로직의 흐름을 제어하는 행동 패턴
-
+- 개방 폐쇄 원칙과 의존 역전 원칙이 적용된 패턴
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Proxy_pattern_diagram.svg/1200px-Proxy_pattern_diagram.svg.png)
 
 - 구현방식
