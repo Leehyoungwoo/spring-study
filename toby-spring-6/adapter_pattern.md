@@ -1,5 +1,7 @@
 ### **어댑터 패턴(Adapter Pattern)**
 
+![](https://velog.velcdn.com/images/papakang22/post/4f78710f-0667-4d4a-badb-9736953f1efd/R1280x0.png)
+
 - 서로 호환되지 않는 인터페이스를 가진 클래스들이 함께 작업할 수 있도록 중간에서 인터페이스를 변환해주는 디자인 패턴
 - 기존 코드와 새로운 코드를 연결할 때 유용
 - 예시
@@ -10,115 +12,68 @@
 - 예시 코드
   - Spring Security의 Form Login에서 `UserDetails`, `UserDetailSerive` 인터페이스
     - 상황
-      - 스프링 시큐리티는 `UserDetails` 인터페이스를 통해 사용자 정보를 처리
-      - 엔티티 클래스 `Member`는 `UserDetails` 인터페이스를 구현하지 않기 때문에 직접 사용할 수 없음
-      - `UserDetails`를 구현하는 커스텀 클래스(`UserFormLoginDto`)를 만들고 `UserService`를 구현하는 커스텀 클래스(`CustomUserDetailsService`)를 엔티티와 시큐리티 시스템 간의 호환성 만듬
-      - `MemberRepository`가 `UserDetails`과 상관없는 `Member`를 넘겨주기 때문에 이를 다시 UserDetails로 변환해주는 어댑터가 필요
-      1. `Member` ( 엔티티 클래스)
-        1. JPA를 통해 데이터베이스에서 사용자 정보를 관리
-        2. 일반적으로 스프링 시큐리티의 `UserDetails` 인터페이스를 구현하지 않음
+      - Adapetee
+        - **`Member`**, **`MemberService`**
 
         ```java
-        @Entity
+        @Getter
+        @Setter
         public class Member {
-            @Id
-            @GeneratedValue(strategy = GenerationType.IDENTITY)
-            private Long id;
-            
             private String username;
             private String password;
-            private String role;
-            private boolean isAccountNonLocked;
-            private boolean isCredentialsNonExpired;
-            private boolean isEnabled;
-        
-            // Getters and Setters
         }
         ```
-
-      1. `UserFormLoginDto` 클래스
-        1. `UserDetails`를 구현하며, `Member` 엔티티에서 사용자 정보를 추출하여 `UserDetails`의 요구 사항을 충족
 
         ```java
-        public class UserFormLoginDto implements UserDetails {
-            private String username;
-            private String password;
-            private String role;
-            private boolean isAccountNonLocked;
-            private boolean isCredentialsNonExpired;
-            private boolean isEnabled;
-        
-            // Constructor, Getters, and Setters
-            
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return Collections.singletonList(new SimpleGrantedAuthority(role));
-            }
-        
-            @Override
-            public String getPassword() {
-                return password;
-            }
-        
-            @Override
-            public String getUsername() {
-                return username;
-            }
-        
-            @Override
-            public boolean isAccountNonExpired() {
-                return true;
-            }
-        
-            @Override
-            public boolean isAccountNonLocked() {
-                return isAccountNonLocked;
-            }
-        
-            @Override
-            public boolean isCredentialsNonExpired() {
-                return isCredentialsNonExpired;
-            }
-        
-            @Override
-            public boolean isEnabled() {
-                return isEnabled;
+        public class MemberService {
+            public member findMemberByUsername(String username) {
+                Member member = new Member();
+                member.setUsername(username);
+                member.setPassword("11111111");
+                return member;
             }
         }
         ```
 
-    1. `CustomUserDetailsService` 클래스
-      1. `UserDetailsService`를 구현하며, `UserFormLoginDto`를 생성하여 스프링 시큐리티에 사용자 정보를 제공
+      - Adapter
+        - **`UserDetailsDto`**, **`CustomMemberService`**
 
-        ```java
-        @Service
-        public class CustomUserDetailsService implements UserDetailsService {
-        
-            @Autowired
-            private MemberRepository memberRepository;
-        
-            @Override
-            public UserFormLoginDto loadUserByUsername(String username) throws UsernameNotFoundException {
-                Member member = memberRepository.findByUsername(username);
-        
-                if (member == null) {
-                    throw new UsernameNotFoundException("User not found");
-                }
-        
-                return UserFormLoginDto.builder()
-                        .username(member.getUsername())
-                        .password(member.getPassword())
-                        .role(member.getRole())
-                        .isAccountNonLocked(member.isAccountNonLocked())
-                        .isCredentialsNonExpired(member.isCredentialsNonExpired())
-                        .isEnabled(member.isEnabled())
-                        .build();
-            }
-        }
-        ```
+          ```java
+          public class UserDetailsDto implements UserDetails {
+              private Member member;
+              
+              public UserDetailsDto(Member member) {
+                  this.member = member;
+              }
+              @Override
+              public String getUsername() {
+                  return this.member.getUsername();
+              }
+              
+              @Override
+              public String getPassword() {
+                  return this.member.getPassword();
+              }
+           }
+          ```
 
-    - 어뎁터
-      - 엔티티 `Member`의 데이터를 `UserDetails` 인터페이스에 맞게 변환하는 역할을 수행
+          ```java
+          public class CustomMemberService implements UserDetailsService {
+              private MemberService memberService;
+              
+              public CustomMemberService(MemberService memberService) {
+                  this.memberService = memberService;
+              }
+              
+              @Override
+              public UserDetails loadUserByUsername(String username) {
+                  Member member = memberService.findMemberByUsername(username);
+                  return new UserDetailsDto(member);
+              }
+          }
+          ```
+
+      - 기존 코드(**`Member`**, **`MemberSerivce`** )를 클라이언트가 사용하는(스프링 시큐리티에서 요구하는) 인터페이스(**`UserDetails` , `UserDetailsService`**)의 구현체(**`CustomMemberService`**, **`UserDetailsDto`**)로 바꿔주는 패턴
   - java.util.Arrays#asList(T...)
     - 배열을 리스트로 변환
     - 배열 - (어댑터) → 리스트
