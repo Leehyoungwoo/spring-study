@@ -1,8 +1,12 @@
-### 템플릿 메서드 패턴
+# 템플릿 메서드 패턴
 
+- 상위 클래스의 견본 메서드에서 하위 클래스가 오버라이딩한 메서드를 호출하는 패턴
+  - 코드를 작성하다보면 로깅, 예외 처리 등등 반복되어 작성하는 코드가 발생하는데
+  -  코드의 중복을 없애기 위한 패턴 중 하나가 템플릿 메서드 패턴
+    - 기본 골조는 그대로 유지하면서 특정 단에서의 동작만 서브 클래스에서 오버라이하여 변경
 - 기능의 뼈대(템플릿)와 실제 구현을 분리하는 패턴
 - 알고리즘의 특정 단계만 제어하고 싶을 때 사용
-- 의존 역전 원칙을 활용
+- 의존 역전 원칙(DIP)을 활용한 디자인 패턴
 
 ![](https://vos.line-scdn.net/landpress-content-v2_1761/1669353654260.png?updatedAt=1669353654000)
 
@@ -20,58 +24,52 @@
     - 너무 많은 추상 메서드를 사용하면 하위 클래스에서 모든 메서드를 구현해야 하므로, 코드의 유연성이 떨어질 수 있음
         - 상속이 깊어지면서 추상 메서드가 많아지면 구조 파악하기가 어려워짐
     - 상속 계층이 깊어질수록 유지보수가 어려워짐
-- 상속이 깊어지고 추상 메서드가 많아지는 경우
-
-    ```java
-    abstract class AbstractProcessor {
-        public final void process() {
-            stepOne();
-            stepTwo();
-            stepThree();
-            stepFour();
+  - 상속이 깊어지고 추상 메서드가 많아지는 경우
+    - 예시
+      - ```InputStream```의 ```read(byte[] b, int off, int len)``` 메서드
+  ```Java
+  public abstract class InputStream implements Closeable {
+    public int read(byte[] b, int off, int len) throws IOException {
+      if (b == null) {
+        throw new NullPointerException();
+      } else if (off < 0 || len < 0 || len > b.length - off) {
+        throw new IndexOutOfBoundsException();
+      } else if (len == 0) {
+        return 0;
+      }
+  
+      int c = read();  // 추상 메서드 호출
+      if (c == -1) {
+        return -1;
+      }
+      b[off] = (byte)c;
+  
+      int i = 1;
+      try {
+        for (; i < len ; i++) {
+          c = read();  // 추상 메서드 호출
+          if (c == -1) {
+            break;
+          }
+          b[off + i] = (byte)c;
         }
-
-        protected abstract void stepOne();
-        protected abstract void stepTwo();
-        protected abstract void stepThree();
-        protected abstract void stepFour();
+      } catch (IOException ee) {
+      }
+      return i;
     }
-
-    abstract class IntermediateProcessor extends AbstractProcessor {
-        @Override
-        protected void stepOne() {
-            System.out.println("Intermediate step one");
-        }
-
-        @Override
-        protected abstract void stepTwo();
-    }
-
-    abstract class FurtherIntermediateProcessor extends IntermediateProcessor {
-        @Override
-        protected void stepTwo() {
-            System.out.println("Further intermediate step two");
-        }
-
-        @Override
-        protected abstract void stepThree();
-    }
-
-    class ConcreteProcessor extends FurtherIntermediateProcessor {
-        @Override
-        protected void stepThree() {
-            System.out.println("Concrete step three");
-        }
-
-        @Override
-        protected void stepFour() {
-            System.out.println("Concrete step four");
-        }
-    }
-    ```
-
+    public abstract int read() throws IOException;
+  }
+  ```
+    - 알고리즘 구조
+      - 입력 스트림에서 데이터를 읽기 위한 알고리즘의 기본적인 틀을 제공. 배열 b에 데이터를 저장하고, 최대 len 바이트를 읽음
+    - 추상 메서드 호출
+      - read() 메서드를 호출하여 스트림에서 실제 데이터를 읽어오는 작업을 수행
+      - 이 메서드는 하위 클래스에서 구체적으로 구현
+    - 데이터 읽기의 기본 흐름을 정의
+    - 실제 데이터 읽기 작업은 하위 클래스에서 구현된 read() 메서드를 통해 수행
+    - 다양한 데이터 소스(예: 파일, 메모리 등)에 대해 동일한 알고리즘 구조를 유지하면서, 각 데이터 소스에 맞는 구체적인 읽기 동작을 유연하게 구현
+      - ```FileInputStream```, ```ByteArrayInputStream```
 ### 상속을 통한 확장의 한계
-
 - 강한 결합도로 과도한 사용은 유지보수성을 저하
     - 시스템이 복잡해지고 요구사항이 변화할 경우 문제가 될 수 있음
         - 메스드를 각각의 요구사항에 맞춰 수정해야 할 가능성이 크고 사용하는 클래스가 너무 많은 책임을 지게 할 수 있음
