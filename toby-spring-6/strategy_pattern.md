@@ -1,6 +1,6 @@
 ### 전략 패턴
 
-- 동일한 계열의 알고리즘군을 정의하고 각 알고리즘군을 캡슐화하여 클라이언트와 상관없이 독립적으로 알고리즘을 목적에 맞게 변경할 수 있게 하는 패턴.
+- 동일한 계열의 알고리즘군을 정의하고(전략 메서드를 가진 전략 객체) 각 알고리즘군을 캡슐화하여 클라이언트와 상관없이 독립적으로 알고리즘을 목적에 맞게 변경할 수 있게 하는 패턴.
 - 알고리즘이 독립적으로 변경 가능하도록 하며, 클라이언트에 영향을 주지 않고 다양한 알고리즘을 적용할 수 있게 해줌
 - 클라이언트가 전략을 생성해 전략을 실행할 컨텍스트에 주입하는 패턴
 ![](https://velog.velcdn.com/images/hero6027/post/7f771761-b293-4467-a405-d5e689723a38/strategy.png)
@@ -17,74 +17,55 @@
     - Context는 연산에 필요한 데이터를 Strategy 클래스에 넘겨줌
         - 실제로 구현된 Impl 클래스는 Context와 함께 동작
 - 예시 코드
-
-    ```java
-    // 전략 인터페이스
-    interface DeliveryStrategy {
-        int calculateShippingCost(int orderAmount);
+  - Strategy(전략)
+    - 알고리즘을 정의하는 인터페이스나 추상 클래스
+    - 구체적인 알고리즘을 어떻게 실행할지 정의
+    ```Java
+    package java.util;
+    // Comparator 인터페이스 정의
+    public interface Comparator<T> {
+        int compare(T o1, T o2);  // 두 객체를 비교하여 정렬 순서를 결정
     }
-
-    // 구체적인 전략: 일반 배송
-    class RegularDeliveryStrategy implements DeliveryStrategy {
-        @Override
-        public int calculateShippingCost(int orderAmount) {
-            return orderAmount < 100 ? 5 : 0;
-        }
-    }
-
-    // 구체적인 전략: 특급 배송
-    class ExpressDeliveryStrategy implements DeliveryStrategy {
-        @Override
-        public int calculateShippingCost(int orderAmount) {
-            return orderAmount * 2;
-        }
-    }
-
-    // 구체적인 전략: 무료 배송
-    class FreeDeliveryStrategy implements DeliveryStrategy {
-        @Override
-        public int calculateShippingCost(int orderAmount) {
-            return 0;
-        }
-    }
-
-    // 주문 클래스 (컨텍스트)
-    class Order {
-        private DeliveryStrategy deliveryStrategy;
-
-        public void setDeliveryStrategy(DeliveryStrategy deliveryStrategy) {
-            this.deliveryStrategy = deliveryStrategy;
-        }
-
-        public int calculateTotalOrderCost(int orderAmount) {
-            int shippingCost = deliveryStrategy.calculateShippingCost(orderAmount);
-            return orderAmount + shippingCost;
-        }
-    }
-
-    // 메인 클래스
-    public class Main {
-        public static void main(String[] args) {
-            Order order = new Order();
-
-            // Regular delivery 선택
-            order.setDeliveryStrategy(new RegularDeliveryStrategy());
-            int totalCost1 = order.calculateTotalOrderCost(80); // 80 + 5 = 85
-            System.out.println("Total cost with regular delivery: " + totalCost1);
-
-            // Express delivery 선택
-            order.setDeliveryStrategy(new ExpressDeliveryStrategy());
-            int totalCost2 = order.calculateTotalOrderCost(100); // 100 + (100 * 2) = 300
-            System.out.println("Total cost with express delivery: " + totalCost2);
-
-            // Free delivery 선택
-            order.setDeliveryStrategy(new FreeDeliveryStrategy());
-            int totalCost3 = order.calculateTotalOrderCost(50); // 50 + 0 = 50
-            System.out.println("Total cost with free delivery: " + totalCost3);
-        }
-    }
-
     ```
+  - ConcreteStrategy(구체적인 전략)
+    - Comparator를 구현한 클래스들은 구체적인 정렬 전략을 제공
+    - 문자열의 알파벳 순서로 정렬하거나 숫자의 크기 순서로 정렬할 수 있음
+    ```java
+    import java.util.Comparator;
+    
+    // 이름에 따라 정렬하는 Comparator
+    public class NameComparator implements Comparator<Person> {
+        @Override
+        public int compare(Person p1, Person p2) {
+            return p1.getName().compareTo(p2.getName());
+        }
+    }
+    ```
+  - Context (컨텍스트)
+    - Collections.sort 메서드는 Comparator를 사용하여 리스트를 정렬
+    -  메서드는 정렬 로직을 실행하기 위한 컨텍스트 역할을 하며, Comparator를 통해 동적으로 정렬 전략을 변경할 수 있음
+    ```java
+    package java.util;
+
+    import java.util.List;
+
+    // Collections 클래스 정의
+    public class Collections {
+    // Comparator를 사용하여 리스트를 정렬
+        public static <T> void sort(List<T> list, Comparator<? super T> c) {
+            if (c == null) {
+            // Comparator가 제공되지 않은 경우 자연 순서로 정렬
+                list.sort(null);
+            } else {
+            // Comparator를 사용하여 정렬
+                list.sort(c);
+            }
+        }
+    }
+    ```
+  - Strategy (Comparator 인터페이스): 정렬 기준을 정의
+  - ConcreteStrategy (NameComparator, AgeComparator 등): 구체적인 정렬 기준을 제공
+  - Context (Collections.sort 메서드): 정렬을 수행하는 역할을 하며, Comparator를 통해 동적으로 정렬 전략을 변경할 수 있음
 
 - 전략 패턴의 장점
     - 알고리즘을 정의하고 캡슐화하여 런타임 시에 알고리즘을 선택하는 데 사용됨
@@ -94,3 +75,6 @@
     - 클라이언트가 전략을 명시적으로 선택해야 함
     - 런타임 시 알고리즘 선택하는데 추가적인 오버헤드 발생 가능
     - 컨텍스트와 전략 간의 결합도 증가
+- 템플릿 메서드 패턴과의 차이점
+  - 동일한 문제에 대해 상속으로 해결하면 템플릿 메서드 패턴, 인터페이스로 해결하면 전략 패턴
+  - 단일 상속만 지원하는 자바에서는 전략 패턴을 더 많이 사용
